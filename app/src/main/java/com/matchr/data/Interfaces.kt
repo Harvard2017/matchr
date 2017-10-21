@@ -7,13 +7,34 @@ import paperparcel.PaperParcelable
  * Created by Allan Wang on 2017-10-20.
  */
 interface IQuestionView {
-    fun onTransition(progress: Float)
-    fun onResponse(): List<String>
+    /**
+     * When triggered, collect the response list
+     * from the view
+     */
+    fun getResponse(): List<String>
+
     fun bindToView(parent: ViewGroup): IQuestionView
+    /**
+     * When triggered, notify the user of an error
+     */
+    fun onError(flag: Int)
 }
 
 interface IQuestionFlow {
-    fun onResponse(question: IQuestion, response: Response, skipped: Boolean): IQuestion
+    /**
+     * Controls the question flow on a received response
+     * [response] is null if question is skipped
+     */
+    fun onResponse(question: IQuestion, response: Response?): IQuestion?
+
+    /**
+     * Check if a given response is valid
+     * Note that the response it not null, as questions
+     * are already defined as skippable or not
+     *
+     * Returns [true] for a valid response, and [false] otherwise
+     */
+    fun validateResponse(question: IQuestion, response: Response): Boolean
 }
 
 /**
@@ -38,7 +59,13 @@ interface IQuestion : PaperParcelable {
  * Global handler to compare data sets
  * Implementation allows the option to handle data through enums
  */
-interface IMatchr<K> {
+interface IMatchr<K> : IQuestionFlow {
+
+    /**
+     * Given a userid, fetch results through a callback
+     * Results are mapped as userid to match score
+     */
+    fun fetch(userId: String, callback: (matches: List<Pair<String, Float>>) -> Unit)
 
     /**
      * Get key of a response to be mapped
