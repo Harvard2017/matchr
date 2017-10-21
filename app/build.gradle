@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 26
@@ -60,6 +61,10 @@ dependencies {
 
     implementation "com.jakewharton:butterknife:$BUTTER_KNIFE"
     kapt "com.jakewharton:butterknife-compiler:$BUTTER_KNIFE"
+
+    implementation "nz.bradcampbell:paperparcel:${PAPER_PARCEL}"
+    implementation "nz.bradcampbell:paperparcel-kotlin:${PAPER_PARCEL}"
+    kapt "nz.bradcampbell:paperparcel-compiler:${PAPER_PARCEL}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     testImplementation 'junit:junit:4.12'

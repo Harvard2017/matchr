@@ -1,8 +1,8 @@
 package com.matchr.fragments
 
-import android.app.Fragment
 import android.os.Bundle
 import android.support.annotation.CallSuper
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,22 +16,43 @@ import com.matchr.data.IQuestion
  */
 abstract class QuestionFragment : Fragment() {
     abstract protected val layoutRes: Int
-    abstract val question: IQuestion
     private var isShown: Boolean = false
     private lateinit var unbinder: Unbinder
+    val question: IQuestion by lazy { arguments!!.getParcelable<IQuestion>(ARG_QUESTION) }
 
-    override final fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle): View? {
+    companion object {
+        private const val ARG_QUESTION_TYPE = "arg_question_type"
+        private const val ARG_QUESTION = "arg_question"
+    }
+
+    private fun addToBundle(action: (Bundle) -> Unit): QuestionFragment {
+        arguments = (arguments ?: Bundle()).apply { action(this) }
+        return this
+    }
+
+    fun withQuestion(question: IQuestion)
+            = addToBundle { it.putParcelable(ARG_QUESTION, question) }
+
+    override final fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(layoutRes, container, false)
         unbinder = ButterKnife.bind(this, view)
         return view
     }
 
     @CallSuper
-    open fun translate(offset: Float) {
+    open fun onPageScrolled(offset: Float) {
         if (offset == 0f && !isShown) {
             onShow()
             isShown = true
         }
+    }
+
+    fun onPageSelected() {
+        if (view != null) onPageSelectedImpl()
+    }
+
+    protected open fun onPageSelectedImpl() {
+
     }
 
     abstract fun onShow()

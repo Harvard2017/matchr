@@ -1,6 +1,7 @@
 package com.matchr.data
 
 import android.view.ViewGroup
+import paperparcel.PaperParcelable
 
 /**
  * Created by Allan Wang on 2017-10-20.
@@ -8,13 +9,18 @@ import android.view.ViewGroup
 interface IQuestionView {
     fun onTransition(progress: Float)
     fun onResponse(): List<String>
+    fun bindToView(parent: ViewGroup): IQuestionView
+}
+
+interface IQuestionFlow {
+    fun onResponse(question: IQuestion, response: Response, skipped: Boolean): IQuestion
 }
 
 /**
  * A single question that handles view generation
  * and propagation
  */
-interface IQuestion {
+interface IQuestion : PaperParcelable {
     /**
      * Type, which helps define how the data is handled
      */
@@ -25,16 +31,14 @@ interface IQuestion {
     val key: Int
     val weight: Float
     val isSkippable: Boolean
-    fun getViewData(): List<String>
-    fun bindToView(parent: ViewGroup): IQuestionView
-    fun onResponse(response: Response): IQuestion
+    val viewData: List<String>
 }
 
 /**
  * Global handler to compare data sets
  * Implementation allows the option to handle data through enums
  */
-interface Matcher<K> {
+interface IMatchr<K> {
 
     /**
      * Get key of a response to be mapped
@@ -50,12 +54,6 @@ interface Matcher<K> {
      * is a list to allow for multiple matches for the same key
      */
     val responseMapper: List<Pair<K, K>>
-
-    /**
-     * Match two complete data sets
-     * This should be handled by a delegate
-     */
-    fun matchAllResponses(responses: Map<K, Response>, otherResponses: Map<K, Response>): Float
 
     /**
      * Match a defined pair of responses
