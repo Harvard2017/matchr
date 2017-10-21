@@ -19,32 +19,26 @@ android {
         }
     }
 
-    def releaseSigning = file("../files/priv/matchr.properties")
-    def hasSigning = releaseSigning.exists()
+    signingConfigs {
+        def matchrProps = new Properties()
+        matchrProps.load(project.rootProject.file("files/priv/matchr.properties").newDataInputStream())
 
-    if (hasSigning) {
-        signingConfigs {
-
-            def releaseProps = new Properties()
-            releaseSigning.withInputStream { releaseProps.load(it) }
-
-            release {
-                storeFile file("../files/priv/matchr.jks")
-                storePassword releaseProps.getProperty('storePassword')
-                keyAlias releaseProps.getProperty('keyAlias')
-                keyPassword releaseProps.getProperty('keyPassword')
-            }
+        matchr {
+            storeFile project.rootProject.file("files/priv/matchr.jks")
+            storePassword matchrProps.getProperty('storePassword')
+            keyAlias matchrProps.getProperty('keyAlias')
+            keyPassword matchrProps.getProperty('keyPassword')
         }
     }
 
     buildTypes {
         debug {
-            if (hasSigning) signingConfig signingConfigs.release
+            signingConfig signingConfigs.matchr
         }
 
         release {
             minifyEnabled true
-            if (hasSigning) signingConfig signingConfigs.release
+            signingConfig signingConfigs.matchr
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -58,7 +52,7 @@ dependencies {
     //All submodules with extensive ui extend this
     implementation "ca.allanwang.kau:core-ui:$KAU"
 
-    compile 'com.google.android.gms:play-services-auth:9.8.0'
+    implementation "com.google.android.gms:play-services-auth:$GOOGLE_SERVICES"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
