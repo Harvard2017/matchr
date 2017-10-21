@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -21,6 +19,11 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.matchr.activities.QuestionActivity;
+import com.matchr.data.Response;
+import com.matchr.utils.L;
+
+import java.util.ArrayList;
 
 /**
  * A login screen that offers login via email/password.
@@ -55,7 +58,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         googleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions).build();
-
+        ArrayList<String> test = new ArrayList<>();
+        test.add("hi");
+        test.add("bye");
+        Firebase.INSTANCE.saveResponse("abcd", new Response(25, test));
+        Firebase.INSTANCE.test();
+        signIn();
     }
 
     private void signIn() {
@@ -79,6 +87,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // if successfully signed in with google
         if (googleApiClient != null && googleApiClient.isConnected()) {
             GoogleSignInAccount account = result.getSignInAccount();
+            if (account == null) {
+                L.INSTANCE.d("Account is null", null);
+                return;
+            }
             // contains user ID
             String personId = account.getId();
             String personName = account.getDisplayName();
@@ -91,8 +103,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             myRef.child(comb + "/Email").setValue(personEmail);
 
             // LoginActivity.class will be changed with next activity
-            Intent intent = new Intent(getBaseContext(), LoginActivity.class);
-            intent.putExtra("UserId", personId);
+            Intent intent = new Intent(this, QuestionActivity.class);
+            intent.putExtra(Firebase.USER_ID, personId);
             startActivity(intent);
         }
     }
