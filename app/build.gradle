@@ -18,6 +18,36 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    def releaseSigning = file("../files/priv/matchr.properties")
+    def hasSigning = releaseSigning.exists()
+
+    if (hasSigning) {
+        signingConfigs {
+
+            def releaseProps = new Properties()
+            releaseSigning.withInputStream { releaseProps.load(it) }
+
+            release {
+                storeFile file("../files/priv/matchr.jks")
+                storePassword releaseProps.getProperty('storePassword')
+                keyAlias releaseProps.getProperty('keyAlias')
+                keyPassword releaseProps.getProperty('keyPassword')
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            if (hasSigning) signingConfig signingConfigs.release
+        }
+
+        release {
+            minifyEnabled true
+            if (hasSigning) signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
 }
 
 dependencies {
