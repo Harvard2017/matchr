@@ -1,7 +1,6 @@
 package com.matchr.data
 
 import com.matchr.data.QuestionType.*
-import paperparcel.PaperParcel
 
 /**
  * Created by Allan Wang on 2017-10-21.
@@ -16,7 +15,6 @@ import paperparcel.PaperParcel
  * and the implementation is by singletons.
  * [IQuestion] is reused quite often and we should avoid constructing duplicates
  */
-@PaperParcel
 enum class Question(override val type: QuestionType,
                     override val weight: Float,
                     override val isSkippable: Boolean,
@@ -36,16 +34,10 @@ enum class Question(override val type: QuestionType,
     EMAIL(SHORT_ANSWER, 0f, false,
             "What is your email?");
 
-    override val key: Int = ordinal
-
     override val viewData: List<String> = viewData.toList()
 
     companion object {
-        @JvmField
-        val CREATOR = PaperParcelQuestion.CREATOR
-
         val values = values()
-
         operator fun get(index: Int) = values[index]
     }
 }
@@ -65,11 +57,11 @@ class QuestionFlow : QuestionFlowDelegate(Question.ROLE) {
  */
 object Matchr : IMatchr<Question>, IQuestionFlow by QuestionFlow() {
 
+    override fun questionFromOrdinal(ordinal: Int): Question = Question[ordinal]
+
     override fun fetch(userId: String, callback: (matches: List<Pair<String, Float>>) -> Unit) {
         //handled by backend?
     }
-
-    override fun map(response: Response): Pair<Question, Response> = Question[response.key] to response
 
     override val responseMapper: List<Pair<Question, Question>>
             = Question.values.map { it to it } //in this example, we are directly mapping question numbers to the same question numbers
@@ -79,4 +71,6 @@ object Matchr : IMatchr<Question>, IQuestionFlow by QuestionFlow() {
         return 1f
     }
 
+
 }
+

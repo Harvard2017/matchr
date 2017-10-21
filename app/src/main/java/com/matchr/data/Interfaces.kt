@@ -1,19 +1,15 @@
 package com.matchr.data
 
-import android.view.ViewGroup
-import paperparcel.PaperParcelable
-
 /**
  * Created by Allan Wang on 2017-10-20.
  */
-interface IQuestionView {
+interface IQuestionContainer {
     /**
      * When triggered, collect the response list
      * from the view
      */
-    fun getResponse(): List<String>
+    fun getResponse(): Response?
 
-    fun bindToView(parent: ViewGroup): IQuestionView
     /**
      * When triggered, notify the user of an error
      */
@@ -21,6 +17,8 @@ interface IQuestionView {
 }
 
 interface IQuestionFlow {
+
+    val start: IQuestion
     /**
      * Controls the question flow on a received response
      * [response] is null if question is skipped
@@ -41,7 +39,7 @@ interface IQuestionFlow {
  * A single question that handles view generation
  * and propagation
  */
-interface IQuestion : PaperParcelable {
+interface IQuestion {
     /**
      * Type, which helps define how the data is handled
      */
@@ -49,17 +47,21 @@ interface IQuestion : PaperParcelable {
     /**
      * Strictly unique
      */
-    val key: Int
+    val ordinal: Int
+    val name: String
     val weight: Float
     val isSkippable: Boolean
     val viewData: List<String>
+    fun createFragment() = type.createFragment(this)
 }
 
 /**
  * Global handler to compare data sets
  * Implementation allows the option to handle data through enums
  */
-interface IMatchr<K> : IQuestionFlow {
+interface IMatchr<Q : Enum<*>> : IQuestionFlow {
+
+    fun questionFromOrdinal(ordinal: Int): Q
 
     /**
      * Given a userid, fetch results through a callback
@@ -70,7 +72,7 @@ interface IMatchr<K> : IQuestionFlow {
     /**
      * Get key of a response to be mapped
      */
-    fun map(response: Response): Pair<K, Response>
+    fun map(response: Response) = questionFromOrdinal(response.qOrdinal) to response
 
     /**
      * Matches the corresponding keys
@@ -80,11 +82,11 @@ interface IMatchr<K> : IQuestionFlow {
      * The intent is to map key codes together, though the base implementation
      * is a list to allow for multiple matches for the same key
      */
-    val responseMapper: List<Pair<K, K>>
+    val responseMapper: List<Pair<Q, Q>>
 
     /**
      * Match a defined pair of responses
      * Note that the other response is nullable
      */
-    fun matchResponse(key: K, response: Response, otherKey: K, otherResponse: Response?): Float
+    fun matchResponse(key: Q, response: Response, otherKey: Q, otherResponse: Response?): Float
 }

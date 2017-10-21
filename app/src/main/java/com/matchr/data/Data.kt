@@ -19,4 +19,4 @@ enum class QuestionType(
             = fragmentFactory().withQuestion(question)
 }
 
-data class Response(val key: Int, val data: List<String>)
+data class Response(val qOrdinal: Int, val data: List<String>)

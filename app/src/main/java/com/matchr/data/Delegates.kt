@@ -3,7 +3,7 @@ package com.matchr.data
 /**
  * Created by Allan Wang on 2017-10-21.
  */
-open class QuestionFlowDelegate(val start: IQuestion) : IQuestionFlow {
+open class QuestionFlowDelegate(override val start: IQuestion) : IQuestionFlow {
 
     private val mapper: MutableMap<IQuestion, (response: Response?) -> IQuestion> = mutableMapOf()
     private val validator: MutableMap<IQuestion, (response: Response) -> Boolean> = mutableMapOf()
