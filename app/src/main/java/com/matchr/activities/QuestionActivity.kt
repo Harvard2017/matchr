@@ -5,7 +5,6 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.view.ViewGroup
 import ca.allanwang.kau.utils.bindView
-import ca.allanwang.kau.utils.rndColor
 import com.matchr.R
 import com.matchr.data.IQuestion
 import com.matchr.data.Matchr
@@ -22,7 +21,7 @@ class QuestionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_questions)
-        proceed(Matchr.start)
+        proceed(Matchr.start, false)
         fab.setOnClickListener {
             val questionFragment = (supportFragmentManager.findFragmentById(R.id.question_container) as QuestionFragment)
             questionFragment.getResponse()
@@ -32,8 +31,10 @@ class QuestionActivity : AppCompatActivity() {
         }
     }
 
-    fun proceed(question: IQuestion) {
-        supportFragmentManager.beginTransaction().setCustomAnimations(R.anim.kau_slide_in_right, R.anim.kau_slide_out_left).replace(R.id.question_container, question.createFragment()).commit()
+    fun proceed(question: IQuestion, animate: Boolean = true) {
+        val transaction = supportFragmentManager.beginTransaction()
+        if (animate) transaction.setCustomAnimations(R.anim.kau_slide_in_right, R.anim.kau_slide_out_left)
+        transaction.replace(R.id.question_container, question.createFragment()).addToBackStack(null).commit()
     }
 
 }

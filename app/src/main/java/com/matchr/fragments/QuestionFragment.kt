@@ -1,7 +1,9 @@
 package com.matchr.fragments
 
+import android.animation.Animator
+import android.animation.AnimatorInflater
+import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
-import android.support.annotation.CallSuper
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,13 +11,17 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
+import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import ca.allanwang.kau.utils.rndColor
+import com.matchr.R
 import com.matchr.data.IQuestion
 import com.matchr.data.IQuestionContainer
 import com.matchr.data.Matchr
+import com.matchr.data.Response
 import com.matchr.utils.L
+import com.matchr.views.AnimatingContainer
 
 
 /**
@@ -26,6 +32,9 @@ abstract class QuestionFragment : Fragment(), IQuestionContainer {
     private var isShown: Boolean = false
     private lateinit var unbinder: Unbinder
     val question: IQuestion by lazy { Matchr.questionFromOrdinal(arguments!!.getInt(ARG_QUESTION)) }
+
+    @BindView(R.id.animating_container)
+    lateinit var container: AnimatingContainer
 
     companion object {
         private const val ARG_QUESTION = "arg_question"
@@ -39,6 +48,15 @@ abstract class QuestionFragment : Fragment(), IQuestionContainer {
     fun withQuestion(question: IQuestion)
             = addToBundle { it.putInt(ARG_QUESTION, question.ordinal) }
 
+    abstract fun getResponseData(): List<String>?
+
+    abstract fun onAnimProgress(progress: Float)
+
+    override final fun getResponse(): Response? {
+        val data = getResponseData()
+        return if (data?.isNotEmpty() == true) Response(question.ordinal, data) else null
+    }
+
     override final fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(layoutRes, container, false)
         unbinder = ButterKnife.bind(this, view)
@@ -47,24 +65,17 @@ abstract class QuestionFragment : Fragment(), IQuestionContainer {
         return view
     }
 
-    @CallSuper
-    open fun onPageScrolled(offset: Float) {
-        if (offset == 0f && !isShown) {
-            onShow()
-            isShown = true
-        }
-    }
-
-    fun onPageSelected() {
-        if (view != null) onPageSelectedImpl()
-    }
-
-    protected open fun onPageSelectedImpl() {
-
-    }
+//    @CallSuper
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        onShow()
+//    }
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
-        if (nextAnim <= 0) return super.onCreateAnimation(transit, enter, nextAnim)
+        if (nextAnim <= 0) {
+//            onShowImpl()
+            return null
+        }
 
         val anim = AnimationUtils.loadAnimation(activity, nextAnim)
 
@@ -80,17 +91,30 @@ abstract class QuestionFragment : Fragment(), IQuestionContainer {
 
             override fun onAnimationEnd(animation: Animation) {
                 L.d("Frag end ${hashCode()}")
-                if (!isShown) {
-                    isShown = true
-                    onShow()
-                }
+//                onShowImpl()
             }
         })
 
         return anim
     }
 
-    abstract fun onShow()
+    override fun onCreateAnimator(transit: Int, enter: Boolean, nextAnim: Int): Animator {
+        val anim = AnimatorInflater.loadAnimator(context, nextAnim)
+
+        anim.addListener(object : AnimatorListenerAdapter() {
+
+        })
+        return super.onCreateAnimator(transit, enter, nextAnim)
+    }
+
+    //    private fun onShowImpl() {
+//        if (isShown) return
+//        isShown = true
+//        L.d("Frag Onshow ${hashCode()}")
+//        onShow()
+//    }
+//
+//    abstract fun onShow()
 
     override fun onDestroyView() {
         super.onDestroyView()
