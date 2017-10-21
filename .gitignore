@@ -2,6 +2,7 @@
 *.apk
 *.ap_
 
+app/google-services.json
 files/priv
 
 # Files for the ART/Dalvik VM
