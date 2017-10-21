@@ -1,0 +1,4 @@
+<resources>
+    <item name="animating_container" type="id" />
+    <item name="iitem_choice" type="id" />
+</resources>
