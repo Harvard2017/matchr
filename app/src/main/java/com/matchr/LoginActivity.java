@@ -311,6 +311,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     {
         if(result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
+            // contains user ID
+            String personId = account.getId();
 
         }
     }
@@ -323,6 +325,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleResult(result);
+
         }
     }
 
@@ -393,4 +396,3 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 }
-
