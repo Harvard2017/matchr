@@ -93,7 +93,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = (Button) findViewById(R.id.signin_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -311,6 +311,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     {
         if(result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
+            // contains user ID
+            String personId = account.getId();
 
         }
     }
@@ -323,6 +325,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleResult(result);
+
         }
     }
 
