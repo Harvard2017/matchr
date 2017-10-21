@@ -1,4 +1,4 @@
-package com.matchr
+package com.matchr.data
 
 import android.view.ViewGroup
 
