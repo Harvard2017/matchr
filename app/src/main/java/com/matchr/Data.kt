@@ -7,9 +7,4 @@ enum class QuestionType {
     MULTIPLE_CHOICE, SINGLE_CHOICE, SHORT_ANSWER, LONG_ANSWER;
 }
 
-data class Response(val key: Int, val data: MutableList<String>) {
-    fun addData(data: String): Response {
-        this.data.add(data)
-        return this
-    }
-}
+data class Response(val key: Int, val data: List<String>)

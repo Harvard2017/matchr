@@ -56,6 +56,10 @@ interface Matcher<K> {
      * This should be handled by a delegate
      */
     fun matchAllResponses(responses: Map<K, Response>, otherResponses: Map<K, Response>): Float
-    
-    fun matchResponse()
+
+    /**
+     * Match a defined pair of responses
+     * Note that the other response is nullable
+     */
+    fun matchResponse(key: K, response: Response, otherKey: K, otherResponse: Response?): Float
 }
