@@ -10,7 +10,6 @@ import android.widget.TextView
 import ca.allanwang.kau.animators.KauAnimator
 import ca.allanwang.kau.animators.SlideAnimatorAdd
 import ca.allanwang.kau.animators.SlideAnimatorRemove
-import ca.allanwang.kau.ui.widgets.TextSlider
 import ca.allanwang.kau.utils.AnimHolder
 import ca.allanwang.kau.utils.KAU_LEFT
 import ca.allanwang.kau.utils.KAU_RIGHT
@@ -45,28 +44,28 @@ class QuestionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_questions)
 
-        fastAdapter.withOnClickListener { v, adapter, item, position -> true }
-                .withOnPreClickListener { _, _, _, _ -> true }
-                .withEventHook(object : ClickEventHook<ChoiceItem>() {
-                    override fun onBind(viewHolder: RecyclerView.ViewHolder): View?
-                            = (viewHolder as? ChoiceItem.ViewHolder)?.button
-
-                    override fun onClick(v: View, position: Int, fastAdapter: FastAdapter<ChoiceItem>, item: ChoiceItem) {
-                        if (currentType == QuestionType.SINGLE_CHOICE) {
-                            if (!item.isSelected) {
-                                val selections = fastAdapter.selections
-                                if (!selections.isEmpty()) {
-                                    val selectedPosition = selections.iterator().next()
-                                    fastAdapter.deselect()
-                                    fastAdapter.notifyItemChanged(selectedPosition)
-                                }
-                                fastAdapter.select(position)
-                            }
-                        } else {
-                            fastAdapter.toggleSelection(position)
-                        }
-                    }
-                })
+//        fastAdapter.withOnClickListener { v, adapter, item, position -> true }
+//                .withOnPreClickListener { _, _, _, _ -> true }
+//                .withEventHook(object : ClickEventHook<ChoiceItem>() {
+//                    override fun onBind(viewHolder: RecyclerView.ViewHolder): View?
+//                            = (viewHolder as? ChoiceItem.ViewHolder)?.button
+//
+//                    override fun onClick(v: View, position: Int, fastAdapter: FastAdapter<ChoiceItem>, item: ChoiceItem) {
+//                        if (currentType == QuestionType.SINGLE_CHOICE) {
+//                            if (!item.isSelected) {
+//                                val selections = fastAdapter.selections
+//                                if (!selections.isEmpty()) {
+//                                    val selectedPosition = selections.iterator().next()
+//                                    fastAdapter.deselect()
+//                                    fastAdapter.notifyItemChanged(selectedPosition)
+//                                }
+//                                fastAdapter.select(position)
+//                            }
+//                        } else {
+//                            fastAdapter.toggleSelection(position)
+//                        }
+//                    }
+//                })
         recycler.apply {
             adapter = fastAdapter
 //            itemAnimator = KauAnimator(SlideAnimatorAdd(KAU_RIGHT), FadeScaleAnimatorRemove()).apply {

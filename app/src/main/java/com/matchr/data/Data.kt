@@ -9,15 +9,14 @@ import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter
  * Created by Allan Wang on 2017-10-20.
  */
 enum class QuestionType(
-        val layoutRes: Int, private val withMultiSelect: Boolean
+        val layoutRes: Int
 ) {
-    SINGLE_CHOICE(R.layout.iitem_choice_single, false),
-    MULTIPLE_CHOICE(R.layout.iitem_choice_multi, true);
+    SINGLE_CHOICE(R.layout.iitem_choice_single),
+    MULTIPLE_CHOICE(R.layout.iitem_choice_multi);
 
     fun updateAdapter(question: Question, title: TextView, adapter: FastItemAdapter<ChoiceItem>) {
-        title.setText(question.question)
-        adapter.set(question.options.map { ChoiceItem(this, it.first) })
-        adapter.withMultiSelect(withMultiSelect)
+        title.text = question.question
+        adapter.set(question.options.mapIndexed { index, (text, _) -> ChoiceItem(this, text, adapter, index) })
     }
 
     companion object {
