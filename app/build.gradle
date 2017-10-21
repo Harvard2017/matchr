@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 26
@@ -53,6 +54,8 @@ dependencies {
     implementation "ca.allanwang.kau:core-ui:$KAU"
 
     implementation "com.google.android.gms:play-services-auth:$GOOGLE_SERVICES"
+    implementation "com.jakewharton:butterknife:$BUTTER_KNIFE"
+    kapt "com.jakewharton:butterknife-compiler:$BUTTER_KNIFE"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
