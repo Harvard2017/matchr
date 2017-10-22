@@ -79,6 +79,8 @@ class QuestionActivity : AppCompatActivity() {
                     override fun onSelectionChanged(item: ChoiceItem?, selected: Boolean) {
                         if (selected && !hasSelection)
                             hasSelection = true
+                        else if (!selected && fastAdapter.selections.size == 0)
+                            hasSelection = false
                     }
                 })
                 .withEventHook(object : ClickEventHook<ChoiceItem>() {
