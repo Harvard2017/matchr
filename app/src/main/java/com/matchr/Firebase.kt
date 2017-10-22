@@ -22,9 +22,7 @@ object Firebase {
     const val NAME = "name"
     const val EMAIL = "email"
 
-    const val QUESTION_DATA_TUTORING = "q_tutoring"
-
-    val question_pool_key = QUESTION_DATA_TUTORING
+    lateinit var question_pool_key: String
 
     val database: FirebaseDatabase by lazy { FirebaseDatabase.getInstance() }
     val users
@@ -35,6 +33,13 @@ object Firebase {
             L.v(data?.key)
             L.v(data?.value?.toString())
             callback(data.intValueOr(-1))
+        }
+    }
+
+    fun init(callback: () -> Unit) {
+        users.ref.genericGet("data_pool") {
+            question_pool_key = it?.value?.toString() ?: QUESTION_DATA_TUTORING
+            callback()
         }
     }
 
@@ -103,20 +108,6 @@ object Firebase {
             }
             callback(responses)
         }
-    }
-
-    fun test(userId: String) {
-//        testImpl()
-    }
-
-    private fun testImpl() {
-        tutoringMatchData().map { saveMatchr(QUESTION_DATA_TUTORING, it) }
-        postDelayed(2000) {
-            getMatchrs {
-                it.forEach { L.d(it.toString()) }
-            }
-        }
-//        tutoringData().map { saveQuestion(QUESTION_DATA_TUTORING, it) }
     }
 
     fun matchData(userId: String, callback: (List<Pair<User, Float>>) -> Unit) {

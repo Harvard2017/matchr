@@ -10,5 +10,6 @@ class MatchrApp : Application() {
     override fun onCreate() {
         L.debug(BuildConfig.DEBUG)
         super.onCreate()
+        if (BuildConfig.DEBUG) addData()
     }
 }

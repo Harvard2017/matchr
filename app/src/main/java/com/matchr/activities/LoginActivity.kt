@@ -1,16 +1,21 @@
-package com.matchr
+package com.matchr.activities
 
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
+import ca.allanwang.kau.utils.bindView
+import ca.allanwang.kau.utils.fadeIn
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.matchr.activities.QuestionActivity
+import com.matchr.BuildConfig
+import com.matchr.Firebase
+import com.matchr.R
 import com.matchr.data.User
 import com.matchr.utils.L
 
@@ -19,6 +24,7 @@ import com.matchr.utils.L
  */
 class LoginActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     private var googleApiClient: GoogleApiClient? = null
+    val container: ViewGroup by bindView(R.id.login_container)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +36,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
 
         val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
         googleApiClient = GoogleApiClient.Builder(this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions).build()
-        if (BuildConfig.DEBUG) signIn()
+        container.fadeIn()
     }
 
     private fun signIn() {
@@ -64,8 +70,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
             val intent = Intent(this, QuestionActivity::class.java)
             //            intent.putExtra(Firebase.USER_ID, "u" + System.currentTimeMillis());
             intent.putExtra(Firebase.USER_ID, id)
-            if (BuildConfig.DEBUG) Firebase.test(id)
-            startActivity(intent)
+            Firebase.init { startActivity(intent) }
         }
     }
 

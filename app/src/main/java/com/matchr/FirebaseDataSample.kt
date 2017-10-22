@@ -1,12 +1,25 @@
 package com.matchr
 
 import com.matchr.data.Matchr
+import com.matchr.data.Question
 import com.matchr.data.multiChoiceQuestion
 import com.matchr.data.singleChoiceQuestion
 
 /**
  * Created by Allan Wang on 2017-10-21.
  */
+fun addData() {
+    addData(QUESTION_DATA_TUTORING, tutoringData(), tutoringMatchData())
+    addData(QUESTION_DATA_STUDYING, studyingData(), studyingMatchData())
+}
+
+fun addData(key: String, questions: List<Question>, matchrs: List<Matchr>) {
+    questions.map { Firebase.saveQuestion(key, it) }
+    matchrs.map { Firebase.saveMatchr(key, it) }
+}
+
+const val QUESTION_DATA_TUTORING = "q_tutoring"
+
 fun tutoringData() = listOf(
         singleChoiceQuestion(1, "Are you a tutor or tutee?",
                 "Tutor" to 6,
@@ -20,27 +33,8 @@ fun tutoringData() = listOf(
                 "15 - 30" to 7,
                 "30 - 50" to 7,
                 ">50" to 7),
-        multiChoiceQuestion(4, "What days are you free?", 5,
+        multiChoiceQuestion(4, "What days are you free?", -1,
                 "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
-
-        singleChoiceQuestion(5, "What major are you in?",
-                "Computer Science" to 22,
-                "Biology" to 22,
-                "Chemistry" to 22,
-                "Psychology" to 22,
-                "Political Science" to 22),
-
-        singleChoiceQuestion(6, "What is the highest education you have?",
-                "Bachelor's" to 2,
-                "Master's" to 2,
-                "PhD" to 2),
-
-        singleChoiceQuestion(7, "What major do you specialize in?",
-                "Computer Science" to 22,
-                "Biology" to 22,
-                "Chemistry" to 22,
-                "Psychology" to 22,
-                "Political Science" to 22),
 
         multiChoiceQuestion(22, "Where is your preferred choice of study?", 4,
                 "Library", "Cafe", "At home", "At school"),
@@ -66,12 +60,34 @@ fun tutoringMatchData() = listOf(
         Matchr(3, 21, 1f),
         Matchr(21, 3, 1f),
         Matchr(4, 4, 10f),
-        Matchr(4, 4, 10f),
-        Matchr(6,2,1f),
-        Matchr(2,6,1f),
-        Matchr(22,22,1f),
-        Matchr(23,23,1f),
-        Matchr(5,7,1f),
-        Matchr(7,5,1f)
+        Matchr(22, 22, 1f)
+)
 
+const val QUESTION_DATA_STUDYING = "q_study"
+
+fun studyingData() = listOf(
+        singleChoiceQuestion(1, "What major are you in?",
+                "Computer Science" to 6,
+                "Biology" to 6,
+                "Chemistry" to 6,
+                "Psychology" to 6,
+                "Political Science" to 6),
+
+        singleChoiceQuestion(6, "What is the highest education you have?",
+                "Bachelor's" to 7,
+                "Master's" to 7,
+                "PhD" to 7),
+
+        singleChoiceQuestion(7, "What major do you specialize in?",
+                "Computer Science" to -1,
+                "Biology" to -1,
+                "Chemistry" to -1,
+                "Psychology" to -1,
+                "Political Science" to -1)
+)
+
+fun studyingMatchData() = listOf(
+        Matchr(1, 1, 1f),
+        Matchr(6, 6, 1f),
+        Matchr(7, 7, 1f)
 )

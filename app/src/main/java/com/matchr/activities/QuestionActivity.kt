@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import com.matchr.iitems.ChoiceItem
 import com.matchr.iitems.PersonItem
 import com.matchr.utils.L
 import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.ISelectionListener
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.listeners.ClickEventHook
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
@@ -40,6 +42,17 @@ class QuestionActivity : AppCompatActivity() {
     val fastAdapter: FastItemAdapter<ChoiceItem> = FastItemAdapter()
     val fab: FloatingActionButton by bindView(R.id.fab)
     private val questionStack = Stack<Question>()
+    private var hasSelection: Boolean = false
+        set(value) {
+            field = value
+            fab.animate().scaleXY(if (value) 1f else 0.9f).alpha(if (value) 1f else 0.7f)
+            fab.isEnabled = value
+        }
+    private var showingResults: Boolean = false
+        set(value) {
+            field = value
+            fab.fadeScaleTransition { setIcon(if (value) GoogleMaterial.Icon.gmd_replay else GoogleMaterial.Icon.gmd_send) }
+        }
     private val userId: String by lazy { intent.getStringExtra(Firebase.USER_ID) }
     private val animator: RecyclerView.ItemAnimator by lazy {
         KauAnimator(SlideAnimatorAdd(KAU_RIGHT), SlideAnimatorRemove(KAU_LEFT)).apply {
@@ -62,6 +75,12 @@ class QuestionActivity : AppCompatActivity() {
 
         fastAdapter.withOnClickListener { v, adapter, item, position -> true }
                 .withOnPreClickListener { _, _, _, _ -> true }
+                .withSelectionListener(object : ISelectionListener<ChoiceItem> {
+                    override fun onSelectionChanged(item: ChoiceItem?, selected: Boolean) {
+                        if (selected && !hasSelection)
+                            hasSelection = true
+                    }
+                })
                 .withEventHook(object : ClickEventHook<ChoiceItem>() {
                     override fun onBind(viewHolder: RecyclerView.ViewHolder): View?
                             = (viewHolder as? ChoiceItem.ViewHolder)?.button
@@ -83,14 +102,29 @@ class QuestionActivity : AppCompatActivity() {
                         }
                     }
                 })
-        recycler.adapter = fastAdapter
-        getFirstQuestion()
+        getFirstQuestion(true)
         fab.setIcon(GoogleMaterial.Icon.gmd_send)
-        fab.setOnClickListener { onRespond() }
+        fab.setOnClickListener {
+            if (showingResults)
+                Firebase.init { getFirstQuestion() }
+            else
+                onRespond()
+        }
     }
 
-    private fun getFirstQuestion()
-            = Firebase.getFirstQuestion { if (it >= 0) onNext(it) }
+    private fun getFirstQuestion(firstCall: Boolean = false) = Firebase.getFirstQuestion {
+        if (!firstCall) {
+            ripple.fade(color(R.color.background_material_light), duration = 800L)
+            title.text = null
+            title.fadeIn()
+        }
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.adapter = fastAdapter
+        if (it >= 0) {
+            if (!firstCall) showingResults = false
+            onNext(it)
+        }
+    }
 
     private val currentType: QuestionType
         get() = questionStack.peek().delegate()
@@ -112,19 +146,20 @@ class QuestionActivity : AppCompatActivity() {
     fun onNext(q: Question?, forward: Boolean = true) {
         L.d("On next question $q")
         if (q == null) return noMoreQuestions()
-        questionStack.push(q)
+        hasSelection = false
+        if (forward) questionStack.push(q)
         recycler.itemAnimator = if (forward) animator else reverseAnimator
         q.delegate().updateAdapter(q, title, fastAdapter)
     }
 
     fun noMoreQuestions() {
-        fab.hide()
+        showingResults = true
         if (questionStack.isEmpty()) {
             materialDialog {
                 title("No Questions Found")
                 content("Please add some questions and refresh!")
                 positiveText("Refresh")
-                onPositive { _, _ -> getFirstQuestion() }
+                dismissListener { _ -> Firebase.init { getFirstQuestion() } }
             }
         } else {
             questionStack.clear()
@@ -156,10 +191,10 @@ class QuestionActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (questionStack.size >= 2) {
+        if (questionStack.size > 1) {
             questionStack.pop()
             onNext(questionStack.peek(), false)
         } else
-            super.onBackPressed()
+            finish()
     }
 }
