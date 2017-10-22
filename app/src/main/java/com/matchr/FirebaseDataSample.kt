@@ -1,5 +1,6 @@
 package com.matchr
 
+import com.matchr.data.Matchr
 import com.matchr.data.multiChoiceQuestion
 import com.matchr.data.singleChoiceQuestion
 
@@ -28,4 +29,13 @@ fun tutoringData() = listOf(
                 "> 2 years" to 21),
         multiChoiceQuestion(21, "How much are you willing to pay?", 4,
                 "15", "15 - 30", "30 - 50", ">50")
+)
+
+fun tutoringMatchData() = listOf(
+        Matchr(1, 1, -50f),
+        Matchr(2, 20, 1f),
+        Matchr(20, 2, 1f),
+        Matchr(3, 21, 1f),
+        Matchr(21, 3, 1f),
+        Matchr(4, 4, 10f)
 )

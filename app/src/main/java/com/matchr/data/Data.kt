@@ -26,7 +26,11 @@ enum class QuestionType(
     }
 }
 
-data class Response(val qOrdinal: Int, val data: List<String>)
+data class User(val id: String, val name: String, val email: String)
+
+data class Matchr(val rId1: Int, val rId2: Int, val weight: Float)
+
+data class Response(val userId: String, val qOrdinal: Int, val data: List<String>)
 
 data class Question(val id: Int, val question: String, val options: List<Pair<String, Int>>, val type: Int) {
     fun delegate() = QuestionType(type)
