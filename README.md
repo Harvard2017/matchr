@@ -11,4 +11,4 @@ are also decoupled from the UI, so no rebuilds are necessary to switch between f
 
 matchr makes it easy to make the connections you need, all from a beautified apk.
 
-
+Test out the builds [here](https://github.com/Harvard2017/matchr/releases/latest)
