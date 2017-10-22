@@ -94,9 +94,6 @@ object Firebase {
     }
 
     fun test(userId: String) {
-        matchData(userId) {
-
-        }
 //        testImpl()
     }
 

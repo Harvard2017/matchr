@@ -128,6 +128,12 @@ class QuestionActivity : AppCompatActivity() {
             fastAdapter.clear()
             title.text = "Matching data..."
             ripple.ripple(rndColor, fab.x, fab.y)
+            Firebase.matchData(userId) {
+                materialDialog {
+                    title("Data")
+                    content(it.toString())
+                }
+            }
         }
     }
 
