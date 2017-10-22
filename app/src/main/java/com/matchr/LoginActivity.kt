@@ -1,23 +1,15 @@
 package com.matchr
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.view.View.OnClickListener
 import android.widget.Toast
-
 import com.google.android.gms.auth.api.Auth
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.api.ResultCallback
-import com.google.android.gms.common.api.Status
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.matchr.activities.QuestionActivity
 import com.matchr.data.User
 import com.matchr.utils.L
@@ -38,7 +30,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
 
         val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
         googleApiClient = GoogleApiClient.Builder(this).enableAutoManage(this, this).addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions).build()
-        signIn()
+        if (BuildConfig.DEBUG) signIn()
     }
 
     private fun signIn() {
@@ -72,7 +64,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, GoogleApiClient
             val intent = Intent(this, QuestionActivity::class.java)
             //            intent.putExtra(Firebase.USER_ID, "u" + System.currentTimeMillis());
             intent.putExtra(Firebase.USER_ID, id)
-            Firebase.test(id)
+            if (BuildConfig.DEBUG) Firebase.test(id)
             startActivity(intent)
         }
     }

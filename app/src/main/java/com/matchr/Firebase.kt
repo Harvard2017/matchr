@@ -93,6 +93,18 @@ object Firebase {
         }
     }
 
+    fun getResponses(id: String, callback: (List<Response>) -> Unit) {
+        users.genericGet(Endpoints.RESPONSES.pathWith("$question_pool_key/$id")) { data ->
+            if (data == null) return@genericGet callback(emptyList())
+            val responses = data.children.map {
+                Response(id, it.key.toInt(), it.child(DATA).children.filterNotNull().map { d ->
+                    d.value.toString()
+                })
+            }
+            callback(responses)
+        }
+    }
+
     fun test(userId: String) {
 //        testImpl()
     }
@@ -166,7 +178,7 @@ object Firebase {
     fun getUsers(callback: (Map<String, User>) -> Unit) {
         database.reference.genericGet(Endpoints.USERS.pathWith("")) { data ->
             data ?: return@genericGet callback(emptyMap())
-            callback(data.children.map { it.key to User(it.key, it.child(NAME).toString(), it.child(EMAIL).toString()) }.toMap())
+            callback(data.children.map { it.key to User(it.key, it.child(NAME).value.toString(), it.child(EMAIL).value.toString()) }.toMap())
         }
     }
 

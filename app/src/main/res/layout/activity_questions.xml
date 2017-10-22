@@ -19,6 +19,7 @@
         android:id="@+id/question_title"
         style="@style/ChoiceButtons"
         android:layout_width="0dp"
+        android:minLines="3"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/kau_spacing_large"
         android:textAlignment="center"

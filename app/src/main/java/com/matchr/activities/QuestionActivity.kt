@@ -3,6 +3,7 @@ package com.matchr.activities
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import com.matchr.data.Question
 import com.matchr.data.QuestionType
 import com.matchr.data.Response
 import com.matchr.iitems.ChoiceItem
+import com.matchr.iitems.PersonItem
 import com.matchr.utils.L
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter
@@ -116,8 +118,8 @@ class QuestionActivity : AppCompatActivity() {
     }
 
     fun noMoreQuestions() {
+        fab.hide()
         if (questionStack.isEmpty()) {
-            fab.hide()
             materialDialog {
                 title("No Questions Found")
                 content("Please add some questions and refresh!")
@@ -125,13 +127,29 @@ class QuestionActivity : AppCompatActivity() {
                 onPositive { _, _ -> getFirstQuestion() }
             }
         } else {
+            questionStack.clear()
             fastAdapter.clear()
-            title.text = "Matching data..."
-            ripple.ripple(rndColor, fab.x, fab.y)
-            Firebase.matchData(userId) {
-                materialDialog {
-                    title("Data")
-                    content(it.toString())
+            title.fadeOut()
+            ripple.ripple(color(R.color.colorAccent), fab.x, fab.y) {
+                Firebase.matchData(userId) {
+                    val resultsAdapter = FastItemAdapter<PersonItem>()
+                    resultsAdapter.withOnClickListener { _, _, item, _ ->
+                        Firebase.getResponses(item.user.id) {
+                            materialDialog {
+                                title("Responses")
+                                items(it.map { it.data.joinToString(", ") })
+                            }
+                        }
+                        true
+                    }
+                    recycler.adapter = resultsAdapter
+                    recycler.layoutManager = GridLayoutManager(this, 2)
+                    recycler.itemAnimator = KauAnimator(SlideAnimatorAdd(KAU_BOTTOM, 2f)).apply {
+                        addDuration = 500L
+                        interpolator = AnimHolder.fastOutSlowInInterpolator(this@QuestionActivity)
+                    }
+                    resultsAdapter.add(it.sortedByDescending { it.second }
+                            .map { (user, score) -> PersonItem(user, score) })
                 }
             }
         }
